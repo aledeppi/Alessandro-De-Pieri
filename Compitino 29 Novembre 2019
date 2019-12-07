@@ -1,0 +1,59 @@
+
+// COMPITINO 28 NOV 2019
+
+// Es 1: take_and_drop dato un numero intero positivo n e una lista l, restituisca una coppia di liste (taken, dropped) tali che taken è la lista dei
+// primi n elementi di l e dropped la lista degli elementi rimmanenti. Se l ha meno di n elem restituirà (l, [])
+
+let rec take (n:int) (l:'a list) =                    // lista dei primi n elem di l
+    match (n, l) with
+      |(_, []) -> []
+      |(0, l) -> []
+      |(n, x::xs) -> x:: take (n-1) xs
+
+let rec drop (n:int) (l:'a list) =                    // lista dei ultimi elem di l 
+    match (n, l) with
+      |(_, []) -> []
+      |(0, l) -> l
+      |(n, x::xs) -> drop (n-1) xs
+
+let take_and_drop (n:int) (l:'a list) = (take n l, drop n l)
+
+
+// Es 2: split dato un numero intero positivo n e una lista l restituisce una lista di liste. Tutte le liste nella lista di output devono essere di 
+// lunghezza n tranne eventualmente l'ultima che puo avere lunghezza minore di n e devono essere tali che la loro concatenzaione coincida con la lista l.
+// split 3 [6;4;5;3;1;10;3;3] -> [[6;4;5];[3;1;10];[3;3]]
+
+let rec take (n:int) (l:'a list) =                    // lista dei primi n elem di l
+    match (n, l) with
+      |(_, []) -> []
+      |(0, l) -> []
+      |(n, x::xs) -> x:: take (n-1) xs
+
+
+let rec drop (n:int) (l:'a list) =                    // lista dei ultimi elem di l 
+    match (n, l) with
+      |(_, []) -> []
+      |(0, l) -> l
+      |(n, x::xs) -> drop (n-1) xs
+
+let split (n:int) (l:'a list) =
+    let rec aux (n:int) (nk:int) (l:'a list) = if l<>[] then (take n l) :: (aux nk nk (drop nk l))
+                                               else []
+    in aux n n l
+
+
+// Es 3: intpair applicata ad un intero postivo n restituisca una lista di tutte le coppie di interi (x, y) con x e y compresi tra 1 e n
+// intpair 3 -> [(1,1);(1,2);(1,3);(2,1);(2,2);(2,3);(3,1);(3,2);(3,3)]
+
+let aux (n1:int) (n:int) =                                  //DATO UN INTERO POS X E Y crea una lista di coppie (n1, n)
+    let rec auxx (n1:int) (n:int) (nk:int) =
+        if nk>n then [] 
+        else (n1, nk) :: auxx n1 n (nk+1)
+    in auxx n1 n 1
+
+let intpair (n:int) =
+    let rec int_aux (n:int) (nk) =
+        if nk>n then []
+        else aux nk n @ int_aux n (nk+1)
+    in int_aux n 1
+    
