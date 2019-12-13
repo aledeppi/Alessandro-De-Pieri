@@ -1,0 +1,488 @@
+// COMPITINI ANNI PASSATI
+
+// 2012 A:
+// Esercizio 1. Scrivere il tipo della seguente funzione f:
+
+let rec f x =
+    match x with
+      |[] -> 0
+      |y::z -> if (y % 2 <>0) then y + (f z) 
+               else (f z);;
+// val f:int list -> int 
+// Che cosa restituisce? -> Restituisce la somma degli elementi dirsari di una lista di interi
+
+// Esercizio 2. Scrivere una funzione prefix che date due liste l1 e l2 verifichi se l1 e un prefisso di `l2. Per esempio:
+// prefix [1; 2] [1; 2; 3; 4] = true
+// prefix [’a’; ’b’; ’c’] [’a’; ’b’; ’d’] = false
+// prefix [ ] [true] = true
+// prefix [1.0; 2.0] [ ] = false
+
+let rec prefix (l1:'a list) (l2:'a list) =
+    match (l1, l2) with
+      |([], []) -> true
+      |([], _) -> true
+      |(_, []) -> false
+      |x::xs, y::ys -> if x=y then prefix xs ys
+                       else false
+// val prefix: l1:'a list -> l2:'a list -> bool
+
+// Esercizio 3. Scrivere una funzione sublist che date due liste l1 e l2 verifichi se l1 e contenuta in l2. Per esempio:
+// sublist [2 ;3] [1; 2; 3; 4] = true
+// sublist [’d’] [’a’; ’b’; ’c’] = false
+// sublist [true] [ ] = false
+// sublist [ ] [1.0; 2.0] = true.
+// Suggerimento: si usi la funzione prefix dell’esecizio precedente.
+
+let rec sublist (l1:'a list) (l2:'a list) =
+    match (l1, l2) with
+      |([], []) -> true
+      |(_, []) -> false
+      |([], _) -> true
+      |l1, y::ys -> if (prefix l1 l2) then true
+                       else (prefix l1 ys)
+// val sub list: l1:'a list -> l2: 'a list -> bool
+
+// Esercizio 4: scrivere una funzione num2list che codifica un numero intero in una lista di cifre. Per esempio:
+// num2list 1200 = [1; 2; 0; 0]
+// num2list 0 = [0]
+// num2list 9865 = [9; 8; 6; 5]
+
+let rec num2list (n:int) =
+    if n<10 then [n] 
+    else num2list (n/10) @ [n%10]
+
+
+// 2012 B: 
+// Esercizio 1: scrivere il tipo della seguente funzione g:
+
+let rec g y =
+    match y with
+      |[] -> 0
+      |x::z -> if (x % 2 =0) then x + (g z) 
+               else (g z);;
+
+// Che cosa restituisce? -> Somma gli elementi pari di una lista di interi
+// val g:int list -> int
+
+// Esercizio 2: scrivere una funzione suffix che date due liste l1 e l2 verifichi se l1 e un suffisso di l2. Per esempio:
+// suffix [3; 4] [1; 2; 3; 4] = true
+// suffix [’a’; ’b’; ’c’] [’a’; ’b’; ’c’; ’d’] = false
+// suffix [ ] [true] = true
+// suffix [1.0; 2.0] [ ] = false
+
+let rec inv (l:'a list) =                           // inverte una lista
+    match l with
+      |[] -> []
+      |x::xs -> inv xs @ [x]
+
+let rec aux (l1:'a list) (l2:'a list) =
+    match (l1, l2) with
+      |([], []) -> true
+      |([], _) -> true
+      |(_, []) -> false
+      |x::xs, y::ys -> if x=y then aux xs ys
+                       else false
+
+let suffix (l1:'a list) (l2:'a list) = aux (inv l1) (inv l2)
+
+// Esercizio 3: scrivere le funzioni prefix e last che data una lista non vuota restituiscono, rispettivamente, la lista senza l’ultimo 
+// elemento e l’ultimo elemento della lista. Per esempio:
+// prefix [1; 2; 0; 0] = [1; 2; 0]
+// prefix ['a'] = [ ]
+// prefix [5.9; 7.0; 2.9; 8.1] = [5.9; 7.0; 2.9]
+// last [1; 2; 0; 0] = 0
+// last ['a'] = ’a’
+// last [5.9; 7.0; 2.9; 8.1] = 8.1.
+
+let rec prefix (l:'a list) =
+    match l with
+      |[x] -> []
+      |x::xs -> x :: (prefix xs)
+
+let rec last (l:'a list) =
+    match l with
+      |[x] -> x
+      |x::xs -> (last xs)
+
+// Esercizio 4: scrivere una funzione list2num che decodifica un numero intero espresso come lista non vuota di cifre. Per esempio:
+// list2num [1; 2; 0; 0] = 1200
+// list2num [0] = 0
+// list2num [9; 8; 6; 5] = 9865.
+// Suggerimento: si usino le funzioni prefix e last dell’esercizio precedente.
+
+let rec list2num (l:int list) =
+    let rec aux (l:int list) (k:int) =
+        match l with
+          |[] -> 0
+          |l -> if (last l)<>0 then (last l) *k + aux (prefix l) (k*10)
+                    else aux (prefix l) (k*10)
+    in aux l 1
+
+
+// 2013
+// Esercizio 1: definire una funzione ricorsiva compress: ’a list -> ’a list che data una lista di elementi l restituisca la lista ottenuta da l sostituendo ogni sequenza 
+// di elementi uguali e contigui in l con una sola occorrenza di tali elementi. Per esempio:
+// compress [1;1;2;2;2;3;3;4;3;3;3] -> [1;2;3;4;3]
+
+let rec compress (l:'a list) =
+    match l with
+      |[] -> []
+      |[x] -> [x]
+      |x::y::xs -> if x=y then compress (y::xs)
+                   else x::compress (y::xs)
+// val compress: l:'a list -> 'a list
+
+// Esercizio 2: scrivere una funzione factors che dato un numero intero n restituisca la lista dei fattori primi di n con le opportune ripetizioni. Per esempio:
+// factors 315 -> [3; 3; 5; 7].
+
+let factors (n:int) =
+    let rec aux (n:int) (k:int) =
+        if n=1 then []
+        else if (n%k)=0 then k :: aux (n/k) (k)
+        else aux n (k+1)
+    aux n 2
+// val factors: n:int -> int list
+
+// Esercizio 3: la cogettura di Goldbach dice che ogni numero positivo pari maggiore di 2 è la somma di due numeri primi. Scrivere una funzione goldbach che dato un numero 
+// intero n restituisca una coppia di numeri primi che sommati danno n. Per esempio: 
+// goldbach 28 -> (5, 23)
+
+let primo (n:int) =
+    let rec aux (n:int) (k:int) =
+        if n=2 || n=1 || n=k then true
+        else if (n%k)=0 then false
+             else aux n (k+1)
+    in aux n 2
+//val primo: n:int -> bool
+
+let goldbach (n:int) = 
+    if n%2=1 then failwith "numero dispari"
+    else let rec aux (n:int) (d:int) =
+            if primo d && primo (n-d) then (d, n-d)
+            else aux n (d+1)
+         in aux n 2
+//val goldbach: n:int -> int * int
+
+// Esercizio 4: scrivere una funzione remove che dati un numero intero k e una lista l restituisca la lista che si ottiene da l rimuovendo il k-eseimo elemento, assumendo che 
+// il primo elemento della lista si trovi in posizione 0, il secondo in posizione 1, e cos`ı via. Per esempio:
+// remove 1 [1.0; 5.3; 7.9; 6.8] -> [1.0; 7.9; 6.8]           
+
+let rec remove (k:int) (l:'a list) =
+    match (k, l) with
+      |(_, []) -> []
+      |(0, x::xs) -> xs
+      |(n, x::xs) -> x:: remove (k-1) xs
+//val remove: k:int -> 'a list -> 'a list
+
+
+// 2014
+// Esercizio 1: scrivere una funzione prefisso che date due liste lst1 e lst2 verifichi se lst1 e un prefisso di lst2. Per esempio:
+// prefisso [1; 2] [1; 2; 3; 4] -> true
+// prefisso [’a’; ’b’; ’c’] [’a’; ’b’; ’d’] -> false
+// prefisso [ ] [true] -> true
+// prefisso [1.0; 2.0] [ ] -> false
+
+let rec prefisso (ls1:'a list) (ls2:'a list) =
+    match (ls1, ls2) with
+      |([], []) -> true
+      |([], ls2) -> true
+      |(ls1, []) -> false
+      |(x::xs, y::ys) -> if x=y then prefisso xs ys
+                         else false
+//val prefisso: ls1:'a list -> ls2:'a list -> bool
+
+// Esercizio 2: definire una funzione ricorsiva somma uguali: ’a list -> ’a list che data una lista di interi l restituisca la lista ottenuta da l sostituendo ogni sequenza di 
+// elementi uguali e contigui in l con un unico elemento uguale alla somma degli elementi nella sequenza. Per esempio:
+// somma_uguali [1;1;2;2;2;2;3;3;4;3;3;3] -> [2;8;6;4;9].
+// somma_uguali [] -> []
+
+let somma_uguali (l:int list) =
+    let rec aux (l:int list) (k:int) =
+        match l with
+          |[] -> []
+          |[x] -> [k+x]
+          |x::y::xs -> let k = k+x
+                       if x<>y then k::aux (y::xs) 0
+                       else aux (y::xs) (k)
+    in aux l 0
+//val somma_uguali: l:int list -> int list
+
+// Esercizio 3: scrivere un predicato perfetto che verifica se un numero intero positivo e un numero perfetto. Un numero si dice perfetto se la somma dei suoi divisori è uguale 
+// al doppio del numero stesso, ovvero se esso vale quanto la somma dei suoi divisori escluso lui stesso. Per esempio il numero 6 e un numero perfetto perche 6 = 1+2+3, il 
+// numero 28 e un numero perfetto perche 28 = 1+2+4+7+14. Quindi:
+// perfect 6 -> true
+// perfect 16 -> false
+// perfect 28 -> true
+
+let perfect (n:int) =
+    let rec aux (n:int) (div:int) (somma:int) =
+        if (n%div)=0 then aux n (div+1) (somma+div)
+        else if somma>n then false
+           else if n=somma then true
+           else aux n (div+1) (somma)
+    in aux n 1 0
+//val perfect: n:int -> bool
+
+
+// 2015
+// Esercizio 1: scrivere una funzione num_dispari che data una lista di liste di interi ls restituisca la lista di interi che indica il numero di elementi dispari in ciascuna 
+// lista appartenente a ls. Per esempio:
+// num_dispari [[1; 2];[1; 2; 3; 4];[]] -> [1; 2; 0]
+// num_dispari [[]] -> [0]
+// num_dispari [] -> []
+
+let rec num_dispari (ls:int list list) =
+    let rec aux (l:int list) =
+        match l with
+          |[] -> 0
+          |x::xs -> if (x%2)=1 then 1 + aux xs
+                    else aux xs
+    match ls with
+      |[] -> [0]
+      |x::xs -> aux x :: num_dispari xs
+//val num_dispari: ls:int list list -> int list
+
+// Esercizio 2: definire una funzione lista_fattori che dato un numero intero non negativo n restituisca la lista dei fattori primi di n (escluso 1). Per esempio:
+// lista_fattori 6 -> [2; 3]
+// lista_fattori 7 -> [7]
+// lista_fattori 0 -> []
+// lista_fattori 1 -> []
+// lista_fattori 2 -> [2]
+
+let lista_fattori (n:int) =
+    if n<0 then failwith "n negativo"
+    else let rec loli (n:int) (div:int) =
+             if (n%div)=0 then div :: loli (n/div) (div)
+             else if (n<=div) then []
+                  else loli n (div+1)
+         in loli n 2
+//val lista_fattori: n:int -> int list
+
+// Esercizio 3. Definire una funzione ricorsiva somma uguali: int list -> int list che data una lista di interi l restituisca la lista ottenuta da l sostituendo ogni sequenza 
+// di elementi uguali e contigui in l con un unico elemento uguale alla somma degli elementi nella sequenza. Per esempio:
+// somma_uguali [1;1;2;2;2;2;3;3;4;3;3;3] -> [2;8;6;4;9].
+// somma_uguali [] -> []
+
+let somma_uguali (l:int list) =
+    let rec aux (l:int list) (k:int) =
+        match l with
+          |[] -> []
+          |[x] -> [x+k]
+          |x::y::xs -> let k = k+x
+                       if x=y then aux (y::xs) (k)
+                       else k:: aux (y::xs) (0)
+    in aux l 0
+
+
+// 2016
+// Esercizio 4. Definire le funzioni init e last che prendono come argomenti un numero naturale n tale che 0<=n<=length(ls) e una lista ls: init n ls restituisce la lista 
+// contenente i primi n elementi di ls e last n ls restituisce la lista contenente gli ultimi elementi della lista ls esclusi i primi n.
+
+let rec init (n:int) (l:'a list) =
+    match (n, l) with
+      |(0, l) -> []
+      |(n, []) -> []
+      |(n, x::xs) -> x::init (n-1) xs
+//val init: n:int l:'a list -> 'a list
+
+let rec last (n:int) (l:'a list) =
+    match (n, l) with
+      |(0, l) -> l
+      |(n, []) -> []
+      |(n, x::xs) -> last (n-1) xs
+//val init: n:int l:'a list -> 'a list
+
+// Esercizio 5. Scrivere una funzione shift: ’a list -> int -> ’a list che data una lista generica ls e un intero n tale che 0<=n<=length(ls) ruota di n posizioni gli 
+// elementi della lista verso sinistra. Per esempio:
+// shift 3 [1;2;3;4;5;6;7;8] -> [4;5;6;7;8;1;2;3]
+
+let rec shift (n:int) (l:'a list) =
+    match (n, l) with
+      |(0, l) -> l
+      |(n, []) -> []
+      |(n, l) -> last n l @ init n l 
+//val shift: n:int -> l:'a list -> 'a list
+
+// Esercizio 6. Scrivere una funzione unzip: (int * ’a) list -> ’a list che data una lista di coppie di tipo (int * ’a) restituisce la lista che si ottiene sostituendo ogni 
+// coppia (k,el) con la sequenza di k elementi uguali a el e contigui. Si assuma che k sia sempre non negativo. Per esempio:
+// unzip [(4, 'a'); (1, 'b'); (2, 'c'); (1, 'd'); (4, 'e')] -> [’a’;’a’;’a’;’a’;’b’;’c’;’c’;’d’;’e’;’e’;’e’;’e’]
+
+let rec unzip (l: (int*'a) list) =
+    let rec aux (n1, n2) =
+        if n1 = 0 then []
+        else n2 :: aux (n1-1, n2)
+    match l with
+      |[] -> []
+      |x::xs -> aux x @ unzip xs
+//val unzip: l:(int*a) list -> 'a list
+
+// 2017 A
+// Esercizio 1. Scrivere una funzione ricorsiva applica_rovescia che data una lista di coppie (elemento, funzione) restituisca la lista che si ottiene concatenando i risultati
+// ottenuti dall’applicazione di ogni funzione al primo elemento della coppia. Gli elementi in output devono comparire in ordine inverso rispetto alle relative coppie in input.
+// Per esempio:
+// applica_rovescia [(3, (fun x -> x + 1)); (7, (fun x -> x - 1))] -> [6; 4]
+// applica_rovescia [(8.4, (fun x -> x * 2.0)); (9.0, (fun x -> x / 3.0))] -> [3.0; 16.8]
+// applica_rovescia [('a', (fun x -> x = 'a')); ('c', (fun x -> x = 'b'))] -> [false; true]
+
+let rec applica_rovescia (l:('a * ('a -> 'b)) list) =
+    match l with
+      |[] -> []
+      |(n, f)::xs -> applica_rovescia xs @ [f n]
+//val applica_rovescia: l:('a * 'a -> 'b) lisst
+
+// Esercizio 2. Scrivere una funzione ricorsiva ripeti che data una lista l e un intero n restituisca una lista dove ogni elemento di l viene ripetuto n volte. Per esempio:
+// ripeti [1; 2; 3] 4 -> [1; 1; 1; 1; 2; 2; 2; 2; 3; 3; 3; 3]
+// ripeti ['a'; 'b'; 'c'] 3 -> [’a’; ’a’; ’a’; ’b’; ’b’; ’b’; ’c’; ’c’; ’c’]
+// ripeti [1.0; 2.0; 2.0; 3.0] 2 -> [1.0; 1.0; 2.0; 2.0; 2.0; 2.0; 3.0; 3.0]
+// ripeti [’a’; ’b’; ’c’] 0 ->  []
+
+let ripeti (l:'a list) (n:int) =
+    let rec aux (l:'a list) (n:int) (k:int) =
+        match (l, n) with
+          |([], _) -> []
+          |(x::xs, 0) -> aux xs k k 
+          |(x::xs, n) -> x:: aux l (n-1) k
+    in aux l n n
+//val ripeti: l:'a list -> n:int -> 'a list
+
+// 2017 B
+// Esercizio 1. Scrivere una funzione ricorsiva apply_r che data una lista di coppie (funzione, elemento) restituisca la lista che si ottiene concatenando i risultati 
+// ottenuti dall’applicazione di ogni funzione al secondo elemento della coppia. Gli elementi in output devono comparire in ordine inverso rispetto alle relative coppie 
+// in input. Per esempio:
+// apply_r [((fun x -> x + 1), 3); ((fun x -> x - 1), 7)] -> [6; 4]
+// apply_r [((fun x -> x * 2.0), 8.4); ((fun x -> x / 3.0), 9.0)] -> [3.0; 16.8]
+// apply_r [((fun x -> x = 'a'), 'a'); ((fun x -> x = 'b'), 'c')] -> [false; true]
+
+let rec apply_r (l:(('a->'b)*'a)list) =
+    match l with
+      |[] -> []
+      |(f, e)::xs -> apply_r xs @ [f e]
+// val apply_r: l:(('a->'b)*'a) list -> 'b list
+
+// Esercizio 2. Scrivere una funzione ricorsiva repeat_in_list che data una lista l e un intero n restituisca una lista dove ogni elemento e di l viene sostituito con una 
+// lista contenete l’elemento e ripetuto n volte. Per esempio:
+// repeat_in_list [1; 2; 3] 4 -> [[1; 1; 1; 1]; [2; 2; 2; 2]; [3; 3; 3; 3]]
+// repeat_in_list ['a'; 'b'; 'c'] 3 -> [[’a’; ’a’; ’a’]; [’b’; ’b’; ’b’]; [’c’; ’c’; ’c’]]
+// repeat_in_list [1.0; 2.0; 2.0; 3.0] 2 -> [[1.0; 1.0]; [2.0; 2.0]; [2.0; 2.0]; [3.0; 3.0;]]
+// repeat_in_list ['a'; 'b'; 'c'] 0 -> [[]; []; []]
+// repeat_in_list ([] : int list) 4 -> []
+
+let rec repeat_in_list (l:'a list) (k:int) =
+    let rec oif (e1:'a) (k:int) =               // dato un elem n1 e un intero k, e1 viene ripetuto k volte
+        if k=0 then []
+        else e1 :: oif e1 (k-1)
+    match l with
+      |[] -> []
+      |x::xs -> oif x k :: repeat_in_list  xs k
+
+
+// 2017 C
+// Esercizio 1. Definire una funzione ricorsiva inverti_app che data una funzione f e una lista di elementi l restituisca la lista che si ottiene concatenando i risultati 
+// ottenuti dall’applicazione della funzione f ad ogni elemento della lista l. Gli elementi in output devono comparire in ordine inverso rispetto all’input. Per esempio:
+// inverti_app (fun x -> x + 1) [3;4;5] -> [6; 5; 4]
+// inverti_app (fun x -> x = 'a') ['b';'a';'c';'d'] -> [false; false; true; false]
+// inverti_app (fun x -> x = 'a') [] -> []
+
+let rec inverti_app (f:'a->'b) (l:'a list) =
+    match l with
+      |[] -> []
+      |x::xs -> (inverti_app f xs) @ [f x]
+
+// Esercizio 2. Scrivere una funzione ricorsiva scompatta che data una lista l di coppie (e, n) dove ogni coppia e composta da un elemento e un numero restituisca la lista 
+// in cui ogni elemento e di l viene ripetuto n volte. Per esempio:
+// scompatta [(1,3); (3,5)] -> [1; 1; 1; 3; 3; 3; 3; 3]
+// scompatta [('b',1); ('z',2)] -> [’b’; ’z’; ’z’]
+// scompatta [('b',1); ('z',0)] -> [’b’]
+
+let rec scompatta (l:'a list) =
+    let rec aux (e, (n:int)) =
+        if n=0 then []
+        else e :: aux (e, (n-1))
+    match l with
+      |[] -> []
+      |(e, n)::xs -> aux (e, n) @ scompatta xs
+
+
+// 2017 D
+// Esercizio 1. Definire una funzione ricorsiva rev_app_fun che data una lista di funzioni l e un elemento x restituisca la lista che si ottiene concatenando i risultati 
+// ottenuti dall’applicazione di ogni funzione della lista l all’elemento x. Gli elementi in output devono comparire in ordine inverso rispetto all’input. Per esempio:
+// rev_app_fun [(fun x -> x + 1); (fun x -> x + 2)] 2 -> [4; 3]
+// rev_app_fun [(fun x -> x = 'b'); (fun x -> x = 'a')] 'a' -> [true; false]
+// rev_app_fun [(fun x -> x + 1.4); (fun x -> x + 2.3)] 2.5 -> [4.8; 3.9]
+
+let rec rev_app_fun (l:('a->'b)list) (x:'a) =
+    match l with
+      |[] -> []
+      |y::ys -> rev_app_fun ys x @ [y x]
+
+// Esercizio 2. Scrivere una funzione ricorsiva unfold_in_list che data una lista l di coppie (e, n) dove ogni coppia e composta da un elemento e un numero restituisca la 
+// lista in cui le coppie vengono sostituite con liste contenenti l’elemento e ripetuto n volte. Per esempio:
+// unfold_in_list [(1,3); (3,5)] -> [[1; 1; 1]; [3; 3; 3; 3; 3]]
+// unfold_in_list [('b',1); ('z',2)] -> [[’b’]; [’z’; ’z’]]
+// unfold_in_list [('b',1); ('z',0)] -> [[’b’]; []]
+
+let rec unfold_in_list (l:'a list) =
+    let rec aux (e, (n:int)) =
+        if n=0 then []
+        else e :: aux (e, (n-1))
+    match l with
+      |[] -> []
+      |(e, n)::xs -> aux (e, n) :: [scompatta xs]
+
+
+// 2018 A
+// Esercizio 1. Scrivere una funzione ricorsiva count_peaks che data una lista di elementi su cui e definito un ordinamento, conta gli elementi che sono maggiori di tutti i 
+// successivi. Per esempio:
+// count_peaks [] -> 0
+// count_peaks [6; 4; 5; 3; 1; 10; 3; 3] -> 2
+// count_peaks [6.0; 4.1; 8.2; 6.5; 10.2; 1.0; 7.5; 2.4; 1.3; 4.0] -> 3
+// count_peaks ['a'] -> 1
+
+let rec count_peaks (l:'a list) =
+    let rec aux (n:'a) (l:'a list) =
+        match l with
+          |[] -> true
+          |x::xs -> if n>x then aux n xs
+                    else false
+    match l with
+      |[] -> 0
+      |[x] -> 1
+      |x::xs -> if (aux x xs) then 1 + count_peaks xs
+                else count_peaks xs
+//val count_peaks: l:'a list -> int
+
+// Esercizio 2. Scrivere una funzione ricorsiva erase_pairs che elimina da una generica lista l tutti gli elementi consecutivi uguali a due a due. Per esempio:
+// erase_pairs [] -> []
+// erase_pairs [10;10;10;3;4;4;4;4;2;2;2] -> [10;3;2]
+// erase_pairs ['a'] -> [’a’]
+
+let rec erase_pairs (l:'a list) =
+    match l with
+      |[] -> []
+      |[x] -> [x]
+      |x::y::xs -> if x=y then erase_pairs xs
+                   else x::erase_pairs (y::xs)
+//erase_pairs l:'a list -> 'a list
+
+
+// 2018 B
+// Esercizio 1. Scrivere una funzione ricorsiva conta_valli che data una lista di elementi su cui e definito un ordinamento, conta gli elementi che sono minori di tutti i 
+// successivi. Per esempio:
+// conta_valli [] -> 0
+// conta_valli [6; 4; 5; 3; 1; 10; 3; 3] -> 2
+// conta_valli [6.0; 4.1; 8.2; 6.5; 1.2; 10.2; 3.5; 7.4; 5.3; 4.0] -> 3
+// conta_valli ['a'] -> 1
+
+let rec conta_valli (l:'a list) =
+    let rec aux (n:'a) (l:'a list) =
+        match l with
+          |[] -> true
+          |x::xs -> if n<x then aux n xs
+                    else false
+    match l with
+      |[] -> 0
+      |[x] -> 1
+      |x::xs -> if (aux x xs) then 1+ conta_valli xs
+                else conta_valli xs
+//val conta_valli: l:'a list -> int
+
