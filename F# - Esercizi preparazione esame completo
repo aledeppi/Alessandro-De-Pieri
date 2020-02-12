@@ -1,0 +1,554 @@
+//ESERCIZI PREPARAZIONE ESAME SECONDA PARTE
+
+// Esercizio 1: Definire una funzione ricorsiva find: (’a -> bool) -> ’a list -> ’a, tale che find p lst riporti il primo elemento di lst che soddisfa 
+// il predicato p. La funzione solleva un’eccezione se nessun elemento della lista soddisfa p. (Notare che il modulo List contiene una funzione con 
+// questo nome, ma qui si chiede di ridefinirla per esercizio). Utilizzare quindi find per definire una funzione find_applicata: int list ->int che, 
+// applicata a una lista di interi, restituisca il primo elemento della lista il cui quadrato sia minore di 30.
+
+let rec find (p:('a -> 'b)) (lst:'a list) = 
+    match lst with
+      |[] -> failwith "nessun elemento soddisfa il predicato"
+      |x::xs -> if (p x) then x
+                else find p xs
+
+find (fun x -> (x * x) < 30) [14;15;12;6;11]
+
+
+// Esercizio 2: Definire una funzione ricorsiva take_while: (’a -> bool) -> ’a list -> ’a list, tale che take_while p lst restituisca la più lunga 
+// parte iniziale di lst costituita tutta da elementi che soddisfano il predicato p. Gli elementi del risultato devono occorrere nello stesso ordine 
+// in cui occorrono nell’argomento. Ad esempio:
+// take_while (function n -> n % 2 = 0) [0;2;4;6;7;8;9;10] -> [0; 2; 4; 6]
+
+let rec take_while (p:('a -> 'b)) (lst:'a list) =
+    match lst with
+      |[] -> []
+      |x::xs -> if (p x) then x:: take_while p xs
+                else []
+
+
+// Esercizio 3: Definire una funzione ricorsiva drop_while: (’a -> bool) -> ’a list -> ’a list, tale che drop_while p lst restituisca la lista che si 
+// ottiene eliminando i primi elementi di lst, fino a che soddisfano il predicato p. Gli elementi del risultato devono occorrere nello stesso ordine 
+// in cui occorrono nell’argomento. Ad esempio:
+// drop_while (function n -> n % 2 = 0) [0;2;4;6;7;8;9;10] -> [7; 8; 9; 10]
+
+let rec drop_while (p:('a -> 'b)) (lst:'a list) =
+    match lst with
+      |[] -> []
+      |x::xs -> if (p x) then drop_while p xs
+                else lst
+
+
+// Esercizio 4: Definire una funzione ricorsiva partition: (’a -> ’bool) -> ’a list -> (’a list * ’a list), tale che partition p lst = (yes, no), 
+// dove yes contiene tutti gli elementi di lst che soddisfano il predicato p , e no quelli che non lo soddisfano. Gli elementi delle due liste yes e 
+// no possono essere in qualsiasi ordine. Ad esempio:
+// partition (function n -> n % 2 = 0) [0;2;4;6;7;8;9;10] -> ([10; 8; 6; 4; 2; 0], [9; 7])
+
+let partition (p:('a -> 'b)) (lst: 'a list) =
+    let rec yes (p:('a -> 'b)) (lst: 'a list) =
+        match lst with
+          |[] -> []
+          |x::xs -> if (p x) then x:: yes p xs
+                    else yes p xs
+    let rec no (p:('a -> 'b)) (lst:'a list) =
+        match lst with
+          |[] -> []
+          |x::xs -> if (p x) then no p xs
+                    else x:: no p xs
+    (yes p lst, no p lst)
+
+
+// Esercizio 5: Definire una funzione ricorsiva pairwith: ’a -> ’b list -> (’a * ’b) list tale che, pairwith y [x1;x2;...;xn] = 
+// [(y,x1);(y,x2);....; (y,xn)]. Utilizzare la funzione List.map
+
+let pairwith (e:'a) (lst:'b list) =
+    List.map (fun y -> (e, y)) lst
+
+
+// Esercizio 6: Definire una funzione ricorsiva verifica_matrice: int -> int list list -> bool, che, dato un intero n e una matrice di interi, 
+// rappresentata mediante liste di liste, restituisca true se la matrice contiene almeno una riga i cui elementi siano tutti minori di n, false 
+// altrimenti. Utilizzare le funzioni List.exists e List.forall.
+
+let rec verifica_matrice (n:int) (l: int list list) =
+    match l with
+      |[] -> false
+      |x::xs -> if (List.forall (fun e -> e < n) x) then true
+                else verifica_matrice n xs
+
+let verifica_matrice n m =                      // o questa 
+  List.exists  (List.forall (function x -> x<n)) m
+
+
+// Esercizio 7: Definire una funzione ricorsiva setdiff: ’a list -> ’a list -> ’a list, che calcola la differenza insiemistica, utilizzando la 
+// funzione List.filter.
+
+let rec non_presente (e:'a) (l:'a list) =
+    match l with
+      |[] -> true
+      |x::xs -> if x=e then false
+                else non_presente e xs
+
+let setdiff (l1:'a list) (l2:'a list) =
+    List.filter (fun x -> non_presente x l2) l1
+
+
+// Esercizio 8: Definire una funzione ricorsiva subset: ’a list -> ’a list -> bool, tale che subset set1 set2 = true se set1 rappresenta un 
+// sottoinsieme di set2. Utilizzare la funzione List.forall
+
+let rec presente (e:'a) (l:'a list) =
+    match l with
+      |[] -> false
+      |x::xs -> if x=e then true
+                else presente e xs
+
+let subset set1 set2 =
+    List.forall (fun x -> presente x set2) 
+
+
+// Esercizio 9: Definire una funzione ricorsiva duplica: int list -> int list, che raddoppia tutti gli elementi di una lista di interi, usando la 
+// funzione List.map. Ad esempio:
+// duplica [0;1;2;3;4] -> [0; 2; 4; 6; 8]
+
+let duplica (l:int list) =
+    List.map (fun x -> x*2) l
+
+
+// Esercizio 10: Definire una funzione ricorsiva mapcons: (’a * ’b list) list -> ’b -> (’a * ’b list) list, che, data una lista di coppie L e un 
+// elemento x di tipo ’b, restituisca la lista che si ottiene inserendo x in testa a ogni secondo elemento delle coppie in L. Utilizzare la funzione 
+// List.map. Ad esempio: 
+// mapcons [('A',[1;2]); ('B',[3;4;5]); ('C',[])] 0 -> [(’A’,[0;1;2]); (’B’,[0;3;4;5]);(’C’,[0])]
+
+let rec mapcons (l:('a * 'b list) list) (x:'b) =
+    List.map (fun (a, b) -> (a, x::b)) l
+
+
+// Esercizio 11: Definire una funzione ricorsiva tutte_liste_con: int -> ’a -> ’a -> ’a list list, che, dato un intero non negativo n e due valori 
+// (dello stesso tipo) x e y, restituisca una lista contenente tutte le possibili liste di lunghezza n contenenti soltanto i due valori x e y.
+// Ad esempio:
+// tutte_liste_con 3 0 1 -> [[0; 0; 0]; [0; 0; 1]; [0; 1; 0]; [0; 1; 1]; [1; 0; 0]; [1; 0; 1]; [1; 1; 0]; [1; 1; 1]]
+
+let rec tutte_liste_con (n:int) (x:'a) (y:'a) =
+
+
+// Esercizio 12: Definire una funzione ricorsiva interleave: ’a -> ’a list -> ’a list list, tale che interleave x lst restituisca una lista con tutte 
+// le liste che si ottengono inserendo x in qualsiasi posizione in lst. Utilizzare la funzione List.map. Ad esempio:
+// interleave 10 [0;1;2] -> [[10; 0; 1; 2]; [0; 10; 1; 2]; [0; 1; 10; 2]; [0; 1; 2; 10]]
+
+let rec aux1 n list =                // rimuove i primi n elementi da list
+    match list with
+      |[] -> []
+      |x::xs -> if n>0 then aux1 (n-1) xs
+                else list
+
+let rec aux2 n list =               // restituisce i primi n elementi di list
+    match list with
+      |[] -> []
+      |x::xs -> if n<>0 then x:: aux2 (n-1) xs
+                else []
+
+let rec lung l =
+    match l with
+      |[] -> 0
+      |x::xs -> 1 + lung xs
+
+let rec aux5 n l =
+    match l with
+      |[] -> []
+      |x::xs -> if n<>0 then x :: aux5 (n-1) xs
+                else []
+
+let rec aux6 n l =                      // aux6 2 [1;2;3;4;5;6] -> [[1;2]; [3;4]; [5;6]]
+    let rec aux4 n l k =                // data n e una list restituisce una lista di liste di n elem
+        match l with                    // aux4 2 [1;2;3;4;5;6] 2 -> [[1;2]; [3;4]; [5;6]]
+          |[] -> []
+          |x::xs -> if k<>0 then aux5 n l :: aux4 (k) (aux1 k l) k 
+                    else []
+    in aux4 n l n
+
+let aux7 e lst =
+    let rec aux3 e lst k = // lista dove e è in testa
+        match lst with
+          |[] -> []
+          |x::xs -> if k<=(lung lst) then (aux2 k lst) @ e :: (aux1 k lst) @ (aux3 e lst (k+1))
+                    else []
+    in aux3 e lst 0
+
+let interleave e lst = aux6 ((lung lst)+1) (aux7 e lst)
+
+///////////////////////  OPPURE + EZ  /////////////////////////////////////////////////
+
+let rec interleave x l = match l with
+    [] -> [[x]] (* c'e' un unico modo di inserire x nella lista vuota *)
+    | y::xs -> (x::y::xs) :: (List.map (fun x -> y::x) (interleave x xs))
+
+
+// Esercizio 13: Definire una funzione ricorsiva permut: ’a list -> ’a list list, tale che permut lst restituisca una lista con tutte le permutazioni 
+// di lst (in qualsiasi ordine).
+
+
+
+
+// Esercizio 14: Definire una funzione ricorsiva find: ’a -> ’a list -> ’a list * ’a list, che, applicata a un elemento e e a una lista L, spezzi L 
+// in due parti: la prima contiene tutti gli elementi che vanno dall’inizio della lista fino alla prima occorrenza di e esclusa; la seconda contiene 
+// tutti gli elementi che seguono la prima occorrenza di e. La funzione solleverà un’eccezione se L non contiene e. Ad esempio:
+// find 3 [1;2;3;4;5;6;3] -> ([1;2],[4;5;6;3])
+
+let rec aux1 e l =    // restituisce gli elementi antecedenti a e
+    match l with
+      |x::xs -> if x<>e then x::aux1 e xs
+                else []
+
+let rec aux2 e l =  //restituisce gli elementi dopo e compreso e
+    match l with
+      |[] -> []
+      |x::xs -> if x<>e then aux2 e xs
+                else l
+
+let rec find e L =
+    if (List.exists ((=)e) L)=false then failwith "L non contiene e"
+    else match L with
+           |[] -> ([], [])
+           |x::xs -> (aux1 e L, aux2 e L)
+
+
+// Esercizio 15: Utilizzando la funzione find definita al punto precedente, definire una funzione spezza: ’a -> ’a list -> ’a list * ’a list, che, 
+// applicata a un elemento x e una lista L restituisca una coppia di liste (L1, L2), dove L1 contiene tutti gli elementi di L che vanno dalla prima
+// alla seconda occorrenza di x, estremi esclusi, e L2 contiene tutti gli elementi di L che seguono la seconda occorrenza di x. La funzione 
+// solleverà un’eccezione se L non contiene almeno due occorrenze di x. Ad esempio:
+// spezza 3 [1;2;3;4;5;6;3;7;8;9;3;10] -> ([4;5;6],[7;8;9;3;10])
+
+let rec aux1 e l =          // conta le occorrenze di e in l
+    match l with
+      |[] -> 0
+      |x::xs -> if x=e then 1 + aux1 e xs
+                else aux1 e xs
+
+let rec aux2 e l =          // elimina gli elem fino a e compreso
+    match l with
+      |[] -> []
+      |x::xs -> if x<>e then aux2 e xs
+                else xs
+
+let rec aux3 e l =          // elimina gli elementi dopo e compreso
+    match l with
+      |[] -> []
+      |x::xs -> if x<>e then x::aux3 e xs
+                else []
+
+let aux4 e l =          // elimina gli elementi fino alla seconda ricorrenza di e incluso
+    let rec aux5 e l k =
+        match l with
+          |[] -> []
+          |x::xs -> if x=e then aux5 e xs (k+1)
+                    else if (k=2) then l
+                    else aux5 e xs k
+    in aux5 e l 0
+ 
+let rec spezza e L =
+    if (aux1 e L)<2 then failwith "L non contiene almeno due occorrenze di x"
+    else  aux3 e (aux2 e L), aux4 e L
+
+
+// Esercizio 16: Definire una funzione ricorsiva prendi: (’a -> bool) -> ’a list -> ’a * ’a list che, applicata a un predicato p e una lista L 
+// sollevi un’eccezione se L non contiene alcun elemento che soddisfa p, altrimenti restituisca una coppia (x, L’) dove x è un elemento di L che 
+// soddisfa p e L’ contiene tutti gli altri elementi di L, in qualsiasi ordine. Se L contiene più elementi che soddisfano p, dalla lista ne verrà 
+// rimosso soltanto uno (in altri termini, L’ ha solo un elemento in meno di L). Ad esempio: 
+// prendi (function x -> x > 10) [3; 20; 7; 11;8; 30; 20] -> (20, [3; 7; 11; 8; 30; 20])
+
+let rec aux1 p l =                  // false se l non contiene alcun elemento che soddisfa p
+    match l with
+      |[] -> false
+      |x::xs -> if p x then true
+                else aux1 p xs
+
+let rec aux2 p l =                  // elem di l che verifica p 
+    match l with
+      |x::xs -> if p x then x
+                else aux2 p xs
+
+let rec aux4 e l =              // elem fino a e non compreso
+    match l with
+      |x::xs -> if x<>e then x:: aux4 e xs
+                else []
+let rec aux5 e l =              // elem da e non compreso alla fine
+    match l with
+      |x::xs -> if x<>e then aux5 e xs
+                else xs
+let aux3 e l = (aux4 e l) @ (aux5 e l)
+                
+let rec prendi p L =
+    if (aux1 p L)=false then failwith "L non contiene alcun elemento che soddisfa p"
+    else (aux2 p L), aux3 (aux2 p L) L
+
+
+// Esercizio 17; Sia data una matrice quadrata le cui caselle possono avere o no un contenuto, rappresentata da tre componenti:
+// – la dimensione della matrice;
+// – una lista associativa, che associa a ogni coppia di coordinate il suo contenuto se presente.
+Ad esempio, la variabile labirinto sotto dichiarata rappresenta una matrice del tipo considerato:
+let labirinto = (5,[((1,0),"oro"); ((3,1),"oro"); ((4,3),"oro");
+((0,1),"argento"); ((2,4),"argento"); ((0,2),"rame");((1,1),"rame");
+((1,3),"rame"); ((2,3),"rame");((3,0),"rame"); ((4,2),"rame")])
+Le caselle a cui non è associato alcun contenuto sono vuote. Una matrice è dunque rappresentata da un valore di tipo int * ((int * int) * ’a) list. Definire, usando List.exists,
+List.forall e List.find:
+1. una funzione in_riga: (int * ((int * int) * ’a) list) -> int ->’a -> bool, che, data una matrice rappresentata come sopra, un numero di riga e un valore, verifichi se la riga data
+contiene il valore dato;
+2. una funzione trova_colonna: (int * ((int * int) * ’a) list) ->int -> ’a, che, data
+una matrice rappresentata come sopra, un numero di riga r e un valore v, restituisca il numero di
+colonna c tale che (r,c) contiene v (se esiste), altrimenti sollevi un’eccezione.
+3. una funzione in_tutte: (int * ((int * int) * ’a) list) -> ’a ->bool, che, data una
+matrice rappresentata come sopra e un valore, verifichi se tutte le righe della matrice contengono
+il valore dato.
+
+
+
+
+// TIPI DERIVATI
+
+// Esercizio 1
+
+type chiave = Aperta | Chiusa
+type cassaforte = chiave list
+
+exception Fail
+(* gira: chiave -> chiave, gira una chiave *)
+let gira x = match x with
+    Aperta -> Chiusa
+    | Chiusa -> Aperta
+
+(* giraPrima: cassaforte -> cassaforte *)
+let giraPrima x = match x with
+    x::xs -> (gira x)::xs
+    | _ -> raise Fail
+
+(* giraDopoChiusa: cassaforte -> cassaforte *)
+let rec giraDopoChiusa x = match x with
+    Chiusa::x::xs -> Chiusa::(gira x)::xs
+      (* oppure Chiusa::giraPrima(x::xs) *)
+    | Aperta::xs -> Aperta::(giraDopoChiusa xs)
+    | _ -> raise Fail
+
+(* successori: cassaforte -> cassaforte list *)
+let successori x = (giraPrima x):: (try [giraDopoChiusa x] with Fail -> [])
+
+
+// ESAMI ANNI PASSATI
+
+// Esame del 7 Gennaio 2019
+// Esercizio 1: Scrivere una funzione ricorsiva eliminaPrecedenti che, applicata a un elemento e e una lista ls restituisca la lista che si ottiene 
+// da ls eliminando tutti gli elementi che precedono la prima occorrenza di e in ls, se x e contenuto in ` ls. La funzione solleva un’eccezione se 
+// e non compare in ls. Infine si scriva il tipo della funzione eliminaPrecedenti.
+
+let rec elimina_precedenti (e:'a) (ls:'a list) =
+    if (List.exists ((=)e) ls)=false then failwith "x non presente in ls"
+    else match ls with
+           |x::xs -> if x=e then ls
+                     else elimina_precedenti e xs
+// val elimina_precedenti: e:'a -> ls:'a list -> 'a list
+
+
+// Esercizio 2: Definire una funzione ricorsiva minimoPositivo che data una lista non vuota di interi l restituisca il valore piu piccolo tra quelli 
+// strettamente maggiori di zero presenti nella lista (e restituisca ` 0 se non ci sono occorrenze di numeri strettamente positivi). Ad esempio:
+// minimoPositivo [5; -2; 3; -4; 9; 4] -> 3
+
+let rec aux (l:int list) =
+    match l with
+      |[] -> 0
+      |[x] -> x
+      |x::y::xs -> if x<=y then aux (x::xs)
+                   else aux (y::xs)
+// val aux: l:int list -> int
+
+let minimoPositivo (l:int list) =   
+    if l=[] then 0
+    else aux (List.filter (fun e -> e>0) l)
+// val minimoPositivo: l:int list -> int
+
+
+// Esercizio 3. Si consideri il tipo prodotto definito sotto
+// type prodotto = Prod of string * float
+// utilizzato per rappresentare i prodotti in vendita presso una azienda di commercio elettronico: ogni prodotto ha un nome di tipo string e un 
+// prezzo base di tipo float. Il prezzo di vendita di un prodotto si ottiene sommando al suo prezzo base il valore di una tassa determinata da una 
+// funzione tax : prodotto -> float che associa ad ogni prodotto la tassa corrispondente. Si definisca una funzione ricorsiva calcolaPrezzo che, 
+// dato il nome di un prodotto x di tipo string, una lista di prodotti ls e una funzione tax calcola il prezzo del prodotto x ottenuto aggiungendo 
+// al suo prezzo base in ls la tassa corrispondente determinata dalla funzione tax, se il prodotto e contenuto è nella lista ls, altrimenti la 
+// funzione restituisce 0.0. Per esempio date la lista di prodotti e la funzione tax definite sotto:
+// let listaProd = [Prod("cd1", 11.00); Prod("cd2", 21.50); Prod("cd3", 15.90)]
+// let tax = (fun x -> match x with
+// Prod(y,z) -> z * 0.05
+// il prezzo di cd1 e: `
+// calcolaPrezzo "cd1" listaProd tax
+// val it : float = 11.55
+// Infine si scriva il tipo della funzione calcolaPrezzo.
+
+type prodotto = Prod of string * float
+
+let listaProd = [Prod("cd1", 11.00); Prod("cd2", 21.50); Prod("cd3", 15.90)]
+
+let tax = (fun n -> match n with
+                    Prod (x, y) -> y * 0.05)
+
+let rec calcolaPrezzo (e:string) (l:prodotto list) tax =
+    match l with
+      |[] -> 0.0
+      |Prod(x,y)::xs -> if (e=x) then y + tax (Prod (x, y))
+                        else calcolaPrezzo e xs tax
+// val calcolaPrezzo: e:string -> l:prodotto list -> tax:(prodotto -> float) -> float
+
+
+// 11 Giugno 2019
+// Esercizio 1. Due numeri si dicono coprimi se il loro unico divisore comune positivo è 1. Scrivere una funzione coprimi che dati due numeri interi 
+// positivi n e m restituisce true se n e m sono coprimi altrimenti restituisce false. Per esempio:
+// coprimi 1 7 ->  true
+// coprimi 5 8 -> true
+// coprimi 6 15 -> false
+
+let coprimi (n:int) (m:int) =
+    if n>m then let rec aux1 n m k =
+                    match k with
+                      |1 -> true
+                      |_ -> if (n%k)=0 && (m%k)=0 then false
+                            else aux1 n m (k-1)
+                in aux1 n m m
+    else if n<m then let rec aux2 n m k =
+                         match k with
+                           |1 -> true
+                           |_ -> if (n%k)=0 && (m%k)=0 then false
+                                 else aux2 n m (k-1)
+                     in aux2 n m n
+    else if m=1 && n=1 then true
+    else false
+// val coprimi: n:int -> m:int -> bool
+
+
+// Esercizio 2: Scrivere una funzione coding che codifica un numero intero non negativo in una lista di cifre. Per esempio:
+// coding 1200 -> [1; 2; 0; 0]
+// coding 0 -> [0]
+// coding 9865 -> [9; 8; 6; 5]
+
+let rec coding (n:int) =
+    if n<10 then n :: []
+    else coding (n/10) @ [n%10] 
+
+// val coding: n:int -> int list
+
+
+// Esercizio 3
+
+type canzone = Song of string * int
+
+let playlist = [Song("One Kiss", 356) ; Song("God’s Plan" , 412) ;
+Song("Flames" , 385)];;
+
+let rec aux (y:int) =   //dato un intero restituisce un float dove la parte interda sono i minuti e quella decimale i secondi
+    (float (y/60)) + ((float (y - ((y/60)*60))) /100.0)
+
+let rec durata (e:string) (pl: canzone list) =
+    match pl with
+      |[] -> 0.0
+      |Song(x, y) ::xs -> if e=x then aux y
+                          else durata e xs
+// val durata: e: string -> pl: canzone list -> float
+
+
+// Esercizio 4 
+
+let durata_playist (pl:canzone list) =
+    let rec aux2 (pl: canzone list) =
+            match pl with
+              |[] -> 0
+              |Song(x,y) :: xs -> y + aux2 xs
+    aux (aux2 pl) 
+// val durata_playlist: pl: canzone list -> float
+
+
+
+// Compito 2 Settembre 2019
+
+// Esercizio 1: Definire un nuovo tipo unione elemento_misto per rappresentare elementi di tipo string, int o bool. Lo scopo è poter creare e gestire 
+// liste “miste”. Si mostri per esempio come può essere rappresentata la lista che contiene gli elementi true, "abc", 2, false, "def"
+
+type elemento_misto = String of string| Int of int | Bool of bool
+
+let uop (l:elemento_misto list) = [Bool true, String "abc", Int 2, Bool false, String "def"]
+
+
+// Esercizio 2: Facendo riferimenti all’Esercizio 1, scrivere una funzione lista_stringhe che estragga da una lista “mista” una lista di elementi di 
+// tipo stringa. Per esempio:
+// lista_stringhe [Bool true; String "abc"; Int 2; Bool false; String "def"] -> ["abc"; "def"]
+// Infine si scriva il tipo della funzione lista_stringhe.
+
+let rec lista_stringhe (l:elemento_misto list) =
+    match l with
+      |[] -> []
+      |String(x) :: xs -> x:: lista_stringhe xs
+      |_ ::xs -> lista_stringhe xs
+
+
+// Esercizio 3
+
+type segnalibro = Indirizzo of string * string
+
+let segnalibri = [("Google","http://www.google.it"); ("Netflix","https://www.netflix.com"); ("Youtube","https://www.youtube.com/")]
+
+let aggiungi ls (id: string) (ind: string) =
+    (id, ind) :: ls  
+
+
+// Esercizio 4 
+
+let rec elimina (l: ('a*'b) list) (id: string) =
+    match l with
+      |[] -> []
+      |(x, y) :: xs -> if id=x then elimina xs id
+                       else (x, y) :: elimina xs id
+
+
+// Esercizio 5
+
+let string2chars (s:string) = [for c in s -> c]
+
+let rec prefisso (l1:'a list) (l2:'b list) = // l1 è prefisso di l2
+    match (l1, l2) with
+      |([], _) -> true
+      |(_, []) -> false
+      |(x::xs, y::ys) -> if x=y then prefisso xs ys
+                         else false
+
+let rec elimina_duplicati (l:'a list) (ind:string) =
+    match l with
+      |[] -> []
+      |(id, ind) :: xs -> if prefisso 
+
+
+let prefix l1 l2 = prefisso (string2chars (List.rev l1)) (string2chars (List.rev l2))
+
+
+let rec setdiff set1 set2 =
+    match set1 with
+      |[] -> []
+      |x::xs -> if List.exists ((=) x) set2 then setdiff xs set2
+                else x::setdiff xs set2
+
+type direzione = Orizzontale | Verticale
+type azione = Procedi of int * direzione
+
+let esegui (x:int, y:int) (act:azione) =
+    match act with
+      |Procedi(s, Orizzontale) -> ((x+s), y)
+      |Procedi(s, Verticale) -> (x, (y+s))
+
+let aux (act:azione list) =
+    let rec aux1 (act:azione list) (k:int) =
+        match act with
+          |[] -> k
+          |Procedi(s, d) :: xs -> if (abs s)>k then aux1 xs s
+                                  else aux1 xs k
+    in aux1 act 0
+
+    esegui_maz_act (5,2) [Procedi(-4, Orizzontale); Procedi(1, Verticale); Procedi(3, Verticale)]
+
+let esegui_max_act (x, y) (act) =
+    let rec aux 2 act kact =
+        match act with
+          |Procedi(s, d) :: xs -> if s = (aux kact) then (esegui (x,y) Procedi (s, d))
+                                  else aux2 (x, y) xs kact
+    in aux2 (x, y) act act
