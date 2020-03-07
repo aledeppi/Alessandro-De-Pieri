@@ -1,0 +1,175 @@
+1. Disegno di un triangolo
+Scrivi un programma che disegni un triangolo di base n e altezza (n+1)/2. Per esempio, se n=5 abbiamo il seguente triangolo:
+
+  *
+ *** 
+*****
+
+Alcuni accorgimenti:
+1) n deve essere positivo e dispari. Ripetere la lettura di n da standard input fintanto che soddisfa la condizione
+2) usare gli spazi per staccare gli * dal bordo di sinistra
+3) non mettere nessuno spazio dopo l'ultimo * ma usare il carattere \n per andare a capo
+
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+
+    int n, m, o, i, j;
+
+    scanf("%d", &n); 
+    while (n%2==0 || n<=0)
+        scanf("%d", &n);
+    m=n/2;
+    o=(n/2)+1;
+    for (i=0; i<=n/2; i++) {
+        for (j=0; j<n; j++) {
+            if (j>=m && j<o)
+                printf("*");
+            else 
+                printf(" ");
+        }
+        m--;
+        o++;
+        printf("\n");
+    }
+    return 0;
+}
+
+
+
+2. L'ennesimo numero primo
+Scrivere un programma che, acquisito in input un numero n>0, stampi l'n-mo numero primo.
+
+#include <stdio.h>
+
+int is_prime (int n) {
+    int d=2;
+    int prime;
+    if (n<=1)
+        prime=0;
+    else
+        prime=1;
+    while (d<n && prime) {
+        if (n%d==0)
+            prime=0;
+        d++;
+    }
+    return prime;
+}
+
+int main() { 
+    /*Add here your code*/
+    
+    int n, i=0, acc=0;        /* n>0 */
+    scanf("%d", &n);
+    while (acc!=n) {
+        if (is_prime (i))
+            acc++;
+        i++;
+    }
+    --i;
+    printf("%d", i);
+    return 0;
+}
+
+
+
+3. Massimo Comun Denominatore (Algoritmo di Euclide)
+Il Massimo Comun Denominatore di due numeri interi x ed y è il più grande numero intero per il quale possono essere entrambi divisi.
+Ad esempio, dati due numeri 20 e 34 i loro divisori sono:
+20: 1, 2, 4, 5, 10, 20
+34: 1, 2, 17, 34
+dove per divisori propri si intendono tutti i numeri per i quali un certo numero può essere diviso.
+Nell'esempio sopra, l'MCD è 2, in quanto 2 è il massimo divisore proprio comune a entrambi i numeri.
+In questa esercitazione vedremo l'algoritmo di Euclide per il calcolo dell'MCD che funziona su una coppia di numeri x>=0, y>=0 e x>=y.
+Consideriamo inizialmente il caso di due numeri interi x e y, con x>y ed  y>0:
+
+Calcolo il resto r della divisione tra x ed y. Ovviamente 0<=r<y
+Se r = 0, allora MCD(x, y) = y
+Altrimenti se r > 0
+assegno ad x il valore di y (x = y)
+assegno ad y il valore di r (y = r)
+torno al passo 1.
+
+Questi punti vengono iterati quando r > 0
+
+Alcune condizioni particolari:
+- Se y = 0 allora MCD(x,0) = x in quanto 0 è divisibile per qualsiasi numero diverso da 0 e quindi anche da x.
+- Per definizione poniamo MCD(0,0) = 0
+- MCD(x,x) = x
+ 
+Scrivi un programma che acquisisca i due numeri da standard input (prima x e poi y) e stampi il risultato dell'algoritmi di Euclide. 
+Nel caso di condizioni errate, ad esempio x<y, il programma deve stampare -1
+
+#include <stdio.h>
+
+int main() {
+    
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+    int x, y, r, test=1, mcd;
+    scanf("%d", &x);
+    scanf("%d", &y);
+    if (x<0 || y<0 || x<y) {
+        mcd=-1;
+        test=0;
+    }
+    else if (x>0 && y==0) {
+        mcd=x;
+        test=0;
+    }
+    else if (x==0 && y==0) {
+        mcd=0;
+        test=0;
+    }
+    while (test){
+        r=x%y;
+        if (r==0) {
+            mcd=y;
+            test=0;
+        }
+        else {
+            x=y;
+            y=r;
+        }
+    }
+    printf("%d", mcd);
+    return 0;
+}
+
+
+
+4. Square root
+Dato un numero intero, vogliamo calcolarne la radice quadrata approssimata all'intero precedente. Per esempio: la radice quadrata di 50 
+sarà 7, perché 7 è il più grande intero per cui 7*7<=50. La radice quadrata di 100 sarà 10. Per risolvere l'esercizio non si utilizzino 
+funzioni di libreria math.h. Se viene inserito un numero negativo stampare la stringa "Numero negativo". Rispettare le maiuscole e le 
+minuscole della stringa.
+
+Suggerimento: supponiamo di voler calcolare la radice intera per difetto di 50. Provo lo 0 e 0*0=0 <= 50. Provo l'1 e 1*1=1<=50. Provo ù
+il 2 e 2*2=4<=50. Ad un certo punto provo il 7 e 7*7=49<=50. Quindi provo anche l'8 e 8*8=64>50.  Pertanto 7 è il più grande intero il 
+cui quadrato è <=50.
+
+#include <stdio.h>
+
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+
+    int n, i, m, test=1;
+    scanf("%d", &n);
+    if (n<0) 
+        printf("Numero negativo");
+    else {
+        i=0;
+        while (test) {
+            m=i*i;
+            if (m>n) {
+                test=0;
+                i=i-1;
+            }
+            else if (m==n)
+                test=0;
+            else
+                i++;
+        }
+        printf("%d", i);
+    }
+    return 0;
+}
