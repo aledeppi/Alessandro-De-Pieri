@@ -1,0 +1,148 @@
+1. Congettura di Goldbach
+
+La congettura di Goldbach stabilisce che ogni numero naturale >1 è la media di due numeri primi. Per esempio 2 è la media tra 2 e 2.
+14 è la media di 11 e 17. 20 è la media di 17 e 23. 13=(7+19)/2 e così via. 
+Scrivi una funzione che dato un numero n restituisca il più piccolo numero primo p1 tale esiste un altro primo p2 che 
+soddisfi (p1+p2)/2. 
+
+Attenzione: talvolta la coppia di prima non è unica. Ad esempio, se prendiamo il 13 abbiamo che:
+13=(3+23)/2=(7+19)/2=(13+13)/2
+In questo caso il programma ritorna 3
+
+#include <stdio.h>
+
+int isprime(int n) {
+    int prime = 1;
+    if (n>1) {
+        int d = 2;
+        while (d<n && prime){
+            if (n%d == 0)
+                prime = 0;
+            d++;
+        }
+    }
+    else
+        prime = 0;
+    return prime;
+}
+
+
+int goldbach(int n) {
+    int a, b, test=1, n2;
+    n2=n*2;
+    for (a=2; test;) {
+        b=n2-a;
+        if ((isprime (a)) && (isprime (b)))
+            test=0;
+        else {
+            a++;
+        }
+    }
+    return a;
+}
+int main() {
+    int n;
+    int p;
+    scanf("%d", &n);
+    
+    p = goldbach(n);
+    
+    printf("%d\n", p);
+    
+    return 0;
+}
+
+
+
+2. Scomposizione in fattori
+
+Si vuole scrivere un programma che stampi la scomposizione in fattori primi di un numero naturale >1. Per esempio dato il numero 12, 
+deve stampare: 2^2*3^1
+cioè 2 alla seconda per 3 alla 1. I fattori primi vanno ordinati in senso crescente e devono comparire una sola volta. 
+
+#include <stdio.h>
+
+int isprime(int n) {
+    int prime = 1;
+    if (n>1) {
+        int d = 2;
+        while (d<n && prime){
+            if (n%d == 0)
+                prime = 0;
+            d++;
+        }
+    }
+    else
+        prime = 0;
+    return prime;
+}
+
+
+int nextprime(int n) {
+    int np, test=1;
+    np=n+1;
+    while (test) {
+        if (isprime (np))
+            test=0;
+        else
+            np++;
+    }
+    return np;
+}
+
+int main() {
+    int n, e=0, i;               /* e=esponenete del nprimo in output */
+    scanf("%d", &n);             /* i=nprimo in output */
+    for (i=2; n!=1;) {
+        if (n%i!=0)
+            i=nextprime (i);
+        else {
+            while (n%i==0) {
+                n=n/i;
+                e++;
+            }
+            printf("%d^%d", i, e);
+            if (n!=1)
+                printf("*");
+            e=0;
+        }
+    }
+    return 0;
+}
+
+
+
+3. Numeri amicali
+
+In matematica, sono numeri amicabili o amicali o amici due numeri per cui la somma dei divisori propri di uno (quindi escluso il 
+numero stesso) è uguale all'altro e viceversa.
+
+Un esempio classico è dato dalla coppia 220 e 284. I due numeri sono amicabili in quanto :
+220 è divisibile per 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 e 110 e la loro somma risulta 284;
+284 è divisibile per 1, 2, 4, 71, 142 che sommati tra loro restituiscono proprio 220.
+
+Scrivere un programma che dati due numeri naturali >1 acquisiti da standard input, stampi "SI" se sono amicali oppure "NO" altrimenti. 
+Suggerimento: crea una funzione ausiliaria (di aiuto) che da un numero >1 restituisca la somma dei sui divisori propri. A questo 
+punto il gioco è fatto...
+
+#include <stdio.h>
+
+int sommadiv (int n) {
+    int i, somma=0;
+    for (i=1; i<n; i++) {
+        if (n%i==0)
+            somma+=i;
+    }
+    return somma;
+}
+
+int main() {
+    int a, b;
+    scanf("%d", &a);
+    scanf("%d", &b);
+    if (sommadiv (a) == b && sommadiv (b) == a)
+        printf("SI");
+    else 
+        printf("NO");
+    return 0;
+}
