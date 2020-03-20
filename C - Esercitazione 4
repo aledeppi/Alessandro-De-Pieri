@@ -1,0 +1,191 @@
+1. Ordina un array di double
+
+Scrivere un programma che acquisito un array di double da standard input, lo stampi (un elemento per riga) in ordine decrescente. 
+Il programma acquisisce inizialmente un numero intero che rappresenta la dimensione dell'array. Quindi acquisisce l'array elemento per 
+elemento. Si può assumere che l'array abbia al massimo 50 elementi e, in caso l'intero inserito inizialmente sia maggiore di 50 o 
+minore di 0, va ripetuta la lettura fino ad ottenere un valore valido.
+
+#include <stdio.h>
+
+/*questa funzione legge la dimensione dell'array e i suoi elementi. Nel caso in cui la dimensione non sia
+valida (<0 oppure >50) allora si ripete la lettura. La funzione ritorna la 
+dimensione acquisita in input. Ricorda che per leggere un double, la scanf
+ha bisogno del segnaposto %lf */
+
+int leggi_array(double vet[]) {
+    int dim, i;
+    do {
+        scanf("%d", &dim);
+    } while (dim<0 || dim>50);
+    for (i=0; i<dim; i++) {
+        scanf("%lf", &vet[i]);
+    }
+    return dim;
+}
+    
+void ordina_array(double vet[], int dim) {
+    int soglia, i;
+    for (soglia=0; soglia<dim; soglia++) {
+        for (i=dim-1; i>soglia; i--) {
+            if (vet[i] > vet[i-1]) {
+                double sup;
+                sup = vet[i];
+                vet[i] = vet[i-1];
+                vet[i-1] = sup;
+            }
+        }
+    }
+    return;
+}
+
+void stampa_array(double vet[], int dim) {
+    int i;
+    for (i=0; i<dim; i++)
+        printf("%.2f\n", vet[i]);
+}
+
+int main() {
+    double myarr[50];
+    
+    int d;
+    
+    d=leggi_array(myarr);
+    ordina_array(myarr, d);
+    stampa_array(myarr, d);
+    
+    return 0;
+}
+
+
+
+2. Trova se la somma è presente
+
+Dato un array v di interi di 10 elementi e un intero s, scrivere una funzione che ritorni 1 se v ha almeno una coppia di elementi 
+distinti che sommano ad s. Ad esempio:
+[2, 4, 4, 6] ammette come somma 8 ma non 4 (non si può usare due volte il numero 2).
+
+Scrivere un programma che legga l'array da standard input e stampi "SI" se la somma è presente o "NO" altrimenti.
+
+Suggerimento "almeno due distinti elementi": in un array possiamo avere più coppie di numeri distinti che sommano ad s. Ad esempio:
+in [3,4,6,7] le coppie (3,7) e (4,6) sommano entrambe a 10 e sono composte da numeri distinti, per l'esercizio è sufficiente 
+individuare "almeno" una coppia.
+
+Non serve quindi analizzare il power set del vettore, ovvero l'insieme di tutte le combinazioni di numeri di lunghezza 0...10, per ora 
+limitiamo l'esercizio alle coppie.
+
+#include <stdio.h>
+
+void leggi_array (int vet[], int dim) {
+    int i;
+    for (i=0; i<dim; i++)
+        scanf("%d", &vet[i]);
+    return;
+}
+
+int somma_presente (int vet[], int dim, int target) {
+    int somma;
+    int presente=0; 
+    int i, j;
+    for (i=0; i<dim && !presente; i++) {
+        for (j=0; j<dim && !presente; j++) {
+            somma = vet[i] + vet [j];
+            if (i!=j && somma==target)
+                presente=1;
+        }
+    }
+    return presente;
+}
+
+int main() {
+    int vet[10];
+    int target;
+    leggi_array(vet, 10);
+    scanf("%d", &target);
+    
+    if (somma_presente(vet, 10, target))
+        printf("SI");
+    else
+        printf("NO");
+    
+    return 0;
+}
+
+
+
+3. Controlla la correttezza di un sudoku
+
+Il Sudoku è un gioco per appassionati di enigmistica. Consiste nel riempire una matrice 9x9 con numeri da 1 a 9 in modo che:
+- ogni riga contenga tutti i numeri da 1 a 9
+- ogni colonna contenga tutti i numeri da 1 a 9
+- ognuno dei 9 quadrati 3x3 che costituiscono la matrice contengano tutti i numeri da 1 a 9
+
+https://it.wikipedia.org/wiki/Sudoku
+
+Il tuo scopo è quello di scrivere un programma che verifichi se un sudoku è valido. La funzione controlla_sudoku  ritorna 1 se la 
+soluzione proposta è corretta, 0 altrimenti. Potete implementare funzioni ausiliarie se lo ritenete necessario.
+
+#include <stdio.h>
+
+void leggi_soluzione(int tab[9][9]) {
+    int r, c;
+    for (r=0; r<9; r++)
+        for (c=0; c<9; c++)
+            scanf("%d", &tab[r][c]);    
+}
+
+int somma_riga (int mat[][9], int r) {
+    int c, somma=0;
+    for (c=0; c<9; c++)
+        somma += mat[r][c];
+    return somma;
+}
+
+int somma_colonna (int mat[][9], int c) {
+    int r, somma=0;
+    for (r=0; r<9; r++)
+        somma += mat[r][c];
+    return somma;
+}
+
+int somma_quadratino (int mat[][9], int r, int c) {
+    int i, j, somma=0;
+    for (i=r; i<r+3; i++) {
+        for (j=c; j<c+3; j++) {
+            somma += mat[i][j];
+        }
+    }
+    return somma;
+}
+
+int controlla_sudoku (int mat[][9]) {
+    int risp=1;
+    int i, x, y;
+    for (i=0; i<9 && risp; i++){
+        if ((somma_riga (mat, i)) != 45)
+            risp=0;
+    } 
+    for (i=0; i<9 && risp; i++) {
+        if ((somma_colonna (mat, i)) != 45)
+            risp=0;
+    }
+    for (x=0; x<9 && risp; x+=3) {
+        for (y=0; y<9 && risp; y+=3) {
+            if((somma_quadratino (mat, x, y)) != 45)
+                risp=0;
+        }
+    } 
+    return risp;
+}
+
+int main() {
+    int sud[9][9];
+    
+    leggi_soluzione(sud);
+    
+    if (controlla_sudoku(sud))
+        printf("SI");
+    else
+        printf("NO");
+    
+    return 0;
+}
