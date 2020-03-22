@@ -87,7 +87,8 @@ int main() {
         }
         turno++;
     }
-    printf("Pareggio!\n");
+    if (test == 0)
+        printf("Pareggio!\n");
     return 0;
 }
 
