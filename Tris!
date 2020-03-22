@@ -1,0 +1,105 @@
+#include <stdio.h>
+
+int main() {
+    int i, j, k, mossa, turno, giocatore, test;
+    turno = 0;
+    giocatore = 1;
+    k = 0;
+    test = 0;
+    int vetmoss[9];
+    char mat[100][100] = {{'|','-','|','-','|','-','|','\n'},{'|',' ','|',' ','|',' ','|','\n'},{'|','-','|','-','|','-','|','\n'},{'|',' ','|',' ','|',' ','|','\n'},{'|','-','|','-','|','-','|','\n'},{'|',' ','|',' ','|',' ','|','\n'},{'|','-','|','-','|','-','|','\n'}};
+    printf("\n\n    TRIS    \nIl Giocatore 1 ha il simbolo X .\nIl Giocatore 2 ha il simbolo O .\n");
+    for (i=0; i<10; i++) {
+        for (j=0; j<10; j++) {
+            printf("%c", mat[i][j]);
+        }
+    }
+    while (turno < 9 && !test) {
+        if (giocatore == 1) {
+            do {
+                scanf("%d", &mossa);         
+            } while (mossa<1 || mossa>9 || mossa_pres(vetmoss, 9, mossa));
+            vetmoss[k] = mossa;
+            k++;
+            if (mossa==7) 
+                mat[1][1]='X';
+            else if (mossa==8)
+                mat[1][3]='X';
+            else if (mossa==9)
+                mat[1][5]='X';
+            else if (mossa==4)
+                mat[3][1]='X';
+            else if (mossa==5)
+                mat[3][3]='X';
+            else if (mossa==6)
+                mat[3][5]='X';
+            else if (mossa==1)
+                mat[5][1]='X';
+            else if (mossa==2)
+                mat[5][3]='X';
+            else if (mossa==3)
+                mat[5][5]='X';
+            for (i=0; i<10; i++) {
+                for (j=0; j<10; j++) {
+                    printf("%c", mat[i][j]);
+                }
+            }
+            giocatore = 2;
+            if ((mat[1][1]=='X' && mat[1][3]=='X' && mat[1][5]=='X') || (mat[3][1]=='X' && mat[3][3]=='X' && mat[3][5]=='X') || (mat[5][1]=='X' && mat[5][3]=='X' && mat[5][5]=='X') || (mat[1][1]=='X' && mat[3][1]=='X' && mat[5][1]=='X') || (mat[1][3]=='X' && mat[3][3]=='X' && mat[5][3]=='X') || (mat[1][5]=='X' && mat[3][5]=='X' && mat[5][5]=='X') || (mat[1][1]=='X' && mat[3][3]=='X' && mat[5][5]=='X') || (mat[1][5]=='X' && mat[3][3]=='X' && mat[5][1]=='X')) {
+                test = 1;
+                printf("\nCOmplimenti giocatore 1. Hai vinto!\n");
+            }
+        }
+        else {
+            do {
+                scanf("%d", &mossa);          
+            } while (mossa<1 || mossa>9 || mossa_pres(vetmoss, 9, mossa));
+            vetmoss[k] = mossa;
+            k++;
+            if (mossa==7) 
+                mat[1][1]='O';
+            else if (mossa==8)
+                mat[1][3]='O';
+            else if (mossa==9)
+                mat[1][5]='O';
+            else if (mossa==4)
+                mat[3][1]='O';
+            else if (mossa==5)
+                mat[3][3]='O';
+            else if (mossa==6)
+                mat[3][5]='O';
+            else if (mossa==1)
+                mat[5][1]='O';
+            else if (mossa==2)
+                mat[5][3]='O';
+            else if (mossa==3)
+                mat[5][5]='O';
+            for (i=0; i<10; i++) {
+                for (j=0; j<10; j++) {
+                    printf("%c", mat[i][j]);
+                }
+            }
+            giocatore = 1;
+            if ((mat[1][1]=='O' && mat[1][3]=='O' && mat[1][5]=='O') || (mat[3][1]=='O' && mat[3][3]=='O' && mat[3][5]=='O') || (mat[5][1]=='O' && mat[5][3]=='O' && mat[5][5]=='O') || (mat[1][1]=='O' && mat[3][1]=='O' && mat[5][1]=='O') || (mat[1][3]=='O' && mat[3][3]=='O' && mat[5][3]=='O') || (mat[1][5]=='O' && mat[3][5]=='O' && mat[5][5]=='O') || (mat[1][1]=='O' && mat[3][3]=='O' && mat[5][5]=='O') || (mat[1][5]=='O' && mat[3][3]=='O' && mat[5][1]=='O')) {
+                test = 1;
+                printf("COmplimenti giocatore 2. Hai vinto!\n");
+            }
+        }
+        turno++;
+    }
+    printf("Pareggio!\n");
+    return 0;
+}
+
+int mossa_pres(int vet[], int dim, int mossa) {
+    int i, pres=0;
+    if (mossa<1 || mossa>9)
+        pres=1;
+    for (i=0; i<dim; i++) {
+        if (vet[i] == mossa)
+            pres=1;
+    }
+    if (pres==1)
+        printf("mossa errata o già fatta");
+    return pres;
+}
