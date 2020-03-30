@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void stampa(char mat[][16]){
+    int i, j;
+    for(i=0; i<6; i++) {
+        for(j=0; j<16; j++){
+            printf("%c", mat[i][j]);
+        }
+    }
+}
+
+
+void sposta_nave(char mat[][16], int m, int v[]) {
+    int j;
+    if (m==1) {
+        for(j=1; j<14; j++) {
+            if (mat[4][j]=='A' && mat[4][j-1]==' ') {
+                mat[4][j]=' ';
+                mat[4][j-1]='A';
+            }
+            else if (mat[4][j]=='A' && mat[4][j-1]=='*') {
+                v[0]=1;
+                mat[4][j]=' ';
+            }
+        }           
+    } 
+    else if (m==2) {
+        for(j=1; j<14; j++) {
+            if (mat[4][j]=='A' && mat[4][j+1]==' ') {
+                mat[4][j]=' ';
+                mat[4][j+1]='A';
+                j=15;
+            }
+            else if (mat[4][j]=='A' && mat[4][j+1]=='*') {
+                v[0]=1;
+                mat[4][j]=' ';
+            }
+        }               
+    }
+}
+
+void printa_primo_asteroide (char mat[][16]) {
+    int r1;
+    srand(time(NULL));
+    r1=rand()%13+1;
+    mat[1][r1]='*';
+
+}
+
+void sposta_asteroidi(char mat[][16], int riga) {
+    int i=riga, j;
+    int r2;
+    srand(time(NULL));
+    r2=rand()%2+1;
+    for (j=1; j<14; j++){
+        if (mat[i][j]=='*') {
+            if (r2==1) {
+                if (mat[i][j-1]!='-' && mat[i+1][j]!='-') {
+                    mat[i][j]=' ';
+                    mat[i+1][j-1]='*';
+                }
+                else if(mat[i+1][j]!='-') {
+                    mat[i][j]=' ';
+                    mat[i+1][j]='*';
+                }
+                else if (mat[i+1][j]=='-') 
+                    mat[i][j]=' ';
+                
+            }
+            else if (r2==2) {
+                if (mat[i][j+1]!='-' && mat[i+1][j]!='-') {
+                    mat[i][j]=' ';
+                    mat[i+1][j+1]='*';
+                }
+                else if (mat[i+1][j]!='-') {
+                    mat[i][j]=' ';
+                    mat[i+1][j]='*';
+                }
+                else if (mat[i+1][j]=='-') 
+                    mat[i][j]=' ';
+            }
+        } 
+    }
+}
+
+int controllo_vittoria(char mat[][16]) {
+    int  j, risp=1;
+    for(j=0; j<14; j++) {
+        if (mat[4][j]=='A')
+            risp=0;        
+    }
+    return risp;
+}
+
+int main(){
+    int mossa, perso=0, punteggio=0;
+    char inizio;
+    char mat[6][16] = {{'-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','\n'},{'-',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','-','\n'},{'-',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','-','\n'},{'-',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','-','\n'},{'-',' ',' ',' ',' ',' ',' ','A',' ',' ',' ',' ',' ',' ','-','\n'},{'-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','\n'}};
+    int v[1];
+    printf("\n\n\n          --------------------------\n          -                        -\n          -   BENVENUTO AL ZOGO!   -\n          -                        -\n          --------------------------\n\n\n");
+    printf("Resisti più tempo che puoi senza farti colpire dagli asteroidi ( * ).\n\n Istruzioni:\n\n> Tasto 1 più invio per muoverti a sisistra.\n> Tasto 2 più invio per muoverti a destra.\n\nSuggerimento: gli asteroidi se non sono vicini al bordo possono muoversi solo \ndiagonalmente.\n\n\nPremi un tasto per iniziare la partita. Buona fortuna!\n");
+    do {
+        scanf("%c", &inizio);
+    } while (inizio<0 || inizio>300);
+    printa_primo_asteroide(mat);
+    stampa(mat);    
+        while (!perso) {
+            scanf("%d", &mossa);
+            sposta_nave(mat, mossa, v);
+            sposta_asteroidi(mat, 4);
+            sposta_asteroidi(mat, 3);
+            sposta_asteroidi(mat, 2);
+            sposta_asteroidi(mat, 1);
+            if (controllo_vittoria(mat)==1 || v[0]==1)
+                perso=1;
+            printa_primo_asteroide(mat);            
+            stampa(mat);            
+            punteggio++;
+    }
+    if(perso==1)
+        printf("\n\nHai perso!\nHai totalizzato un punteggio di %d.\n\n\n", punteggio);
+    return 0;
+}
